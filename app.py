@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import logging
 import os
-import random
 
 from cassandra.cluster import Cluster
 
@@ -48,11 +47,6 @@ def set_username():
     username = input('**** Username to use app: ')
     log.info(f"Username set to {username}")
     return username
-
-
-def get_instrument_value(instrument):
-    instr_mock_sum = sum(bytearray(instrument, encoding='utf-8'))
-    return random.uniform(1.0, instr_mock_sum)
 
 
 def main():
