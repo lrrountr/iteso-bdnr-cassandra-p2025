@@ -32,12 +32,23 @@ docker run --name node01 -p 9042:9042 -d cassandra
 docker start node01
 ```
 
-### Start a Cassandra cluster with 2 nodes
+### Start a Cassandra cluster with multiple nodes
 ```
-# Recipe to create a cassandra cluster using docker
-docker run --name node01 -p 9042:9042 -d cassandra
-docker run --name node02 -d --link node01:cassandra cassandra
+# Create a dedicated docker network for the cassandra application
+docker network create --subnet=192.168.1.0/24 cassandra-net
+
+# Launch containers with static IPs and attached to the network
+docker run --name node01 -d --net  cassandra-net --ip 192.168.1.2 cassandra
+docker run --name node02 -d --net  cassandra-net --ip 192.168.1.3 -e CASSANDRA_SEEDS="192.168.1.2" cassandra
+docker run --name node03 -d --net  cassandra-net --ip 192.168.1.4 -e CASSANDRA_SEEDS="192.168.1.2" cassandra
 
 # Wait for containers to be fully initialized, verify node status
 docker exec -it node01 nodetool status
+```
+
+### Cleanup Cassandra Cluster with multiple nodes
+```
+docker stop node01 node02 node03
+docker rm node01 node02 node03
+docker network rm cassandra-net
 ```
